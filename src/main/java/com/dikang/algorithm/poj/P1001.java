@@ -12,30 +12,29 @@ public class P1001 {
 
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner cin = new Scanner(System.in);
 
-        while (scanner.hasNext()) {
-            double R = scanner.nextDouble();
-            int n = scanner.nextInt();
+        BigDecimal num;
 
-            BigDecimal bigDecimal = new BigDecimal(R);
-            bigDecimal.setScale(10, BigDecimal.ROUND_HALF_UP);
-            String result = bigDecimal.pow(n).toPlainString();
+        int n;
 
-            int i =0;
-            for (; i<result.length(); i++) {
-                if (result.charAt(i)!='0')
-                    break;
+        String r;
+
+        while(cin.hasNextBigDecimal()){
+
+            num = cin.nextBigDecimal();
+            n = cin.nextInt();
+
+            num = num.pow(n);
+
+            r = num.stripTrailingZeros().toPlainString();
+
+            if(r.startsWith("0.")){
+
+                r = r.substring(1);
             }
 
-            if (i>0) {
-                result = result.substring(i);
-            }
-
-
-
-            System.out.println(result);
+            System.out.println(r);
         }
-
     }
 }
