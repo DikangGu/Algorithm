@@ -38,7 +38,9 @@ public class BSTree {
     }
 
 
-    public Node root;
+    private Node root;
+    private Node prev;
+    private Node head;
 
     public BSTree() {
         root = null;
@@ -48,37 +50,92 @@ public class BSTree {
      * insert a node into the tree
      * @param key
      */
+    public Node insert(Node node, int key) {
+        if (null == node) {
+            return new Node(key);
+        }
+
+        if (key < node.key) {
+            node.left = insert(node.left, key);
+            node.left.parent = node;
+        } else {
+            node.right = insert(node.right, key);
+            node.right.parent = node;
+        }
+
+        return node;
+    }
+
     public void insert(int key) {
-        if (null == root) {
-            root = new Node(key);
+        root = insert(root, key);
+    }
+
+    public void delete(Node node, int key) {
+        if (null == node) {
             return;
         }
 
-        Node p = root;
-        while(true) {
+        if (key < node.key) {
+            delete(node.left, key);
+        } else if (key > node.key) {
+            delete(node.right, key);
+        } else {
 
-            if (key < p.key) {
-                if (null != p.left) {
-                    p = p.left;
-                    continue;
-                } else {
-                    Node newNode = new Node(key);
-                    p.left = newNode;
-                    newNode.parent = p;
-                    break;
-                }
+            Node x, y;
+            if (node.left == null && node.right == null) {
+                y = node;
             } else {
-                if (null != p.right) {
-                    p = p.right;
-                    continue;
-                } else {
-                    Node newNode = new Node(key);
-                    p.right = newNode;
-                    newNode.parent = p;
-                    break;
-                }
+                y = InOrderSuccessor(node);
+            }
+
+            if (y.left != null) x = y.left;
+            else x = y.right;
+
+            if (null != x) x.parent = y.parent;
+
+            // set parent
+            if (y.parent == null) {
+                root = x;
+            } else if (y == y.parent.left) {
+                y.parent.left = x;
+            } else {
+                y.parent.right = x;
+            }
+
+            if (y!=node) {
+                node.key = y.key;
             }
         }
+    }
+
+    public Node toDoubleLinkedList() {
+        prev = null;
+        head = null;
+
+        toDoubleLinkedList(root);
+
+        return head;
+    }
+
+    public void toDoubleLinkedList(Node node) {
+        if (null == node)
+            return;
+
+        toDoubleLinkedList(node.left);
+
+        node.left = prev;
+        if (null != prev) {
+            prev.right = node;
+        } else {
+            head = node;
+        }
+
+        Node right = node.right;
+        head.left = node;
+        node.right = head;
+
+        prev = node;
+        toDoubleLinkedList(right);
     }
 
     /**
@@ -148,6 +205,14 @@ public class BSTree {
         System.out.println();
 
         tree.InOrderNonRecurise();
+        System.out.println();
+
+        Node head = tree.toDoubleLinkedList();
+        Node p = head;
+        do {
+            System.out.print(p.key + ",");
+            p = p.right;
+        } while(p != head);
         System.out.println();
     }
 }
