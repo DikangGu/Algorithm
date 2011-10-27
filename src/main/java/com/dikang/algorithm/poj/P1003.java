@@ -29,6 +29,19 @@ public class P1003 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        String line = sc.nextLine();
+        double len = sc.nextDouble();
+        while (len !=0) {
+
+            double n = 1;
+            double thelen = 1.0/(n+1);
+            while (thelen < len) {
+                n++;
+                thelen += 1.0/(n+1);
+            }
+
+            System.out.println((int)n + " card(s)");
+
+            len = sc.nextDouble();
+        }
     }
 }
