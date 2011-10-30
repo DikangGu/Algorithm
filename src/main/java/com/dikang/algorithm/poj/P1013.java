@@ -16,104 +16,78 @@ public class P1013 {
 
         for (int i=0; i<n; i++) {
             // 0: good, -1: lighter, 1: heavier, 5: unknown
-            for (int j=0; j<12; j++) candidates[j] = 5;
+            for (int j=0; j<12; j++) candidates[j] = 0;
+            String[][] segs = new String[3][3];
 
             for (int j=0; j<3; j++) {
                 String line = sc.nextLine();
-                String[] segs = line.split(" ");
-                if (segs[2].equals("even")) {
-                    for (char c : segs[0].toCharArray()) {
-                        candidates[c-'A'] = 0;
+                String[] words = line.split(" ");
+                segs[j][0] = words[0];
+                segs[j][1] = words[1];
+                segs[j][2] = words[2];
+            }
+
+            for (int j=0; j<12; j++) {
+
+                candidates[j] = -1; // lighter
+                boolean find = true;
+
+                for (int k=0; k<3; k++) {
+                    int left=0;
+                    int right=0;
+                    for(char c : segs[k][0].toCharArray()) {
+                        left += candidates[c-'A'];
+                    }
+                    for(char c : segs[k][1].toCharArray()) {
+                        right += candidates[c-'A'];
                     }
 
-                    for (char c : segs[1].toCharArray()) {
-                        candidates[c-'A'] = 0;
-                    }
-                } else if (segs[2].equals("up")) {
-                    for (char c : segs[0].toCharArray()) {
-                        if (candidates[c-'A'] == 0) {
-                            continue;
-                        } else if (candidates[c-'A'] < 0) {
-                            candidates[c-'A'] = 0;
-                        } else if (candidates[c-'A'] == 5) {
-                            candidates[c-'A'] = 1;
-                        } else {
-                            candidates[c-'A'] += 1;
-                        }
-                    }
-
-                    for (char c : segs[1].toCharArray()) {
-                        if (candidates[c-'A'] == 0) {
-                            continue;
-                        } else if (candidates[c-'A'] == 5) {
-                            candidates[c-'A'] = -1;
-                        } else if (candidates[c-'A'] >0) {
-                            candidates[c-'A'] = 0;
-                        } else {
-                            candidates[c-'A'] -= 1;
-                        }
-                    }
-                }  else if (segs[2].equals("down")) {
-                    for (char c : segs[1].toCharArray()) {
-                        if (candidates[c-'A'] == 0) {
-                            continue;
-                        } else if (candidates[c-'A'] < 0) {
-                            candidates[c-'A'] = 0;
-                        } else if (candidates[c-'A'] == 5) {
-                            candidates[c-'A'] = 1;
-                        } else {
-                            candidates[c-'A'] += 1;
-                        }
-                    }
-
-                    for (char c : segs[0].toCharArray()) {
-                        if (candidates[c-'A'] == 0) {
-                            continue;
-                        } else if (candidates[c-'A'] == 5) {
-                            candidates[c-'A'] = -1;
-                        } else if (candidates[c-'A'] >0) {
-                            candidates[c-'A'] = 0;
-                        } else {
-                            candidates[c-'A'] -= 1;
-                        }
+                    String compare = segs[k][2];
+                    if (!((compare.equals("even") && left == right ) ||
+                            (compare.equals("up") && left > right ) ||
+                            (compare.equals("down") && left < right))) {
+                        find = false;
+                        break;
                     }
                 }
-            }
 
-            int j;
-            int min=0;
-            int mini=0;
-            int max=0;
-            int maxi=0;
-            for (j=0; j<12 && candidates[j] != 5; j++) {
-                min = candidates[j];
-                mini = j;
-                max = candidates[j];
-                maxi = j;
-                break;
-            }
-
-            for (;j<12; j++) {
-                if (candidates[j] == 5) continue;
-
-                if (min > candidates[j]) {
-                    min = candidates[j];
-                    mini = j;
+                if (find) {
+                    char c = (char)('A' + j);
+                    System.out.println(c + " is the counterfeit coin and it is light.");
+                    break;
                 }
 
-                if (max < candidates[j]) {
-                    max = candidates[j];
-                    maxi = j;
+                candidates[j] = 1;
+                find = true;
+
+                for (int k=0; k<3; k++) {
+                    int left=0;
+                    int right=0;
+                    for(char c : segs[k][0].toCharArray()) {
+                        left += candidates[c-'A'];
+                    }
+                    for(char c : segs[k][1].toCharArray()) {
+                        right += candidates[c-'A'];
+                    }
+
+                    String compare = segs[k][2];
+                    if (!((compare.equals("even") && left == right ) ||
+                            (compare.equals("up") && left > right ) ||
+                            (compare.equals("down") && left < right))) {
+                        find = false;
+                        break;
+                    }
                 }
+
+                if (find) {
+                    char c = (char)('A' + j);
+                    System.out.println(c + " is the counterfeit coin and it is heavy.");
+                    break;
+                }
+                candidates[j] = 0;
             }
 
-            if (Math.abs(min) > Math.abs(max)) {
-                char c = (char) ('A' + mini);
-                System.out.println(c + " is counterfeit coin and it is light.");
-            } else {
-                char c = (char) ('A' + maxi);
-                System.out.println(c + " is counterfeit coin and it is heavy.");
-            }
         }
+
     }
 }
